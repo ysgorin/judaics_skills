@@ -54,13 +54,14 @@ class Button:
                 if self.action:
                     self.action()
 
-# Quiz class
 class Quiz:
     def __init__(self):
         self.questions = data.to_dict(orient="records")
         self.index = 0
         self.correct_count = 0
         self.show_result = False
+        self.wrong_message = ""  # Store wrong answer message
+        self.message_timer = 0  # Timer for message display
         self.load_question()
 
     def load_question(self):
@@ -77,6 +78,7 @@ class Quiz:
         random.shuffle(choices)  # Randomize answers
         self.choices = choices
         self.answered_correctly = False  # Reset flag for this question
+        self.wrong_message = ""  # Clear wrong message
 
     def check_answer(self, selected_answer):
         """Handle answer selection"""
@@ -84,8 +86,11 @@ class Quiz:
             if selected_answer == self.correct_answer:
                 self.correct_count += 1
                 self.answered_correctly = True  # Prevent counting retries as correct
+                self.wrong_message = ""  # Clear wrong message
+                self.next_question()
             else:
-                print("Wrong answer. Try again.")
+                self.wrong_message = "Wrong answer, try again."
+                self.message_timer = pygame.time.get_ticks()  # Start timer
 
     def next_question(self):
         """Move to next question or show results"""
@@ -100,6 +105,7 @@ class Quiz:
         self.index = 0
         self.correct_count = 0
         self.show_result = False
+        self.wrong_message = ""
         self.load_question()
 
     def draw(self, screen):
@@ -132,6 +138,17 @@ class Quiz:
                 button = Button(positions[i][0], positions[i][1], btn_width, btn_height, choice,
                                 lambda c=choice: self.check_answer(c))
                 button.draw(screen)
+
+            # Display wrong answer message in red
+            if self.wrong_message:
+                error_font = pygame.font.Font(FONT_PATH, 18)
+                error_surface = error_font.render(self.wrong_message, True, (255, 0, 0))
+                error_rect = error_surface.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT - 100))
+                screen.blit(error_surface, error_rect)
+
+                # Hide message after 1.5 seconds
+                if pygame.time.get_ticks() - self.message_timer > 1500:
+                    self.wrong_message = ""
 
 # Start screen
 def start_screen():

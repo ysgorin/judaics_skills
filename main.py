@@ -78,19 +78,23 @@ class Quiz:
         random.shuffle(choices)  # Randomize answers
         self.choices = choices
         self.answered_correctly = False  # Reset flag for this question
+        self.first_attempt = True  # Reset first attempt flag for new question
         self.wrong_message = ""  # Clear wrong message
+
 
     def check_answer(self, selected_answer):
         """Handle answer selection"""
         if not self.answered_correctly:
             if selected_answer == self.correct_answer:
-                self.correct_count += 1
-                self.answered_correctly = True  # Prevent counting retries as correct
+                if self.first_attempt:
+                    self.correct_count += 1  # Only count if correct on first try
+                self.answered_correctly = True
                 self.wrong_message = ""  # Clear wrong message
                 self.next_question()
             else:
                 self.wrong_message = "Wrong answer, try again."
                 self.message_timer = pygame.time.get_ticks()  # Start timer
+                self.first_attempt = False  # Mark that the first attempt was incorrect
 
     def next_question(self):
         """Move to next question or show results"""

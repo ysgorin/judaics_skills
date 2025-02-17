@@ -19,7 +19,7 @@ data = pd.read_csv(CSV_PATH)
 
 # Initialize screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Hebrew Grammar Quiz")
+pygame.display.set_caption("Chumash Vocabulary Quiz")
 
 # Load background image
 background = pygame.image.load(BACKGROUND_PATH)
